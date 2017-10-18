@@ -7,12 +7,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import br.com.rafaelvcunha.agenda.modelo.Aluno;
+
 public class FormularioActivity extends AppCompatActivity {
+
+    private FormularioHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_formulario);
+        this.helper = new FormularioHelper(this);
     }
 
     @Override
@@ -26,6 +31,7 @@ public class FormularioActivity extends AppCompatActivity {
 
         switch (item.getItemId()){
             case R.id.menu_formulario_ok:
+                Aluno aluno = helper.pegaAluno();
                 Toast.makeText(FormularioActivity.this, "Aluno salvo com sucesso!", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(FormularioActivity.this, ListaAlunosActivity.class);
                 startActivity(intent);
