@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import br.com.rafaelvcunha.agenda.dao.AlunoDAO;
 import br.com.rafaelvcunha.agenda.modelo.Aluno;
 
 public class FormularioActivity extends AppCompatActivity {
@@ -32,9 +33,15 @@ public class FormularioActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.menu_formulario_ok:
                 Aluno aluno = helper.pegaAluno();
-                Toast.makeText(FormularioActivity.this, "Aluno salvo com sucesso!", Toast.LENGTH_LONG).show();
+
+                AlunoDAO dao = new AlunoDAO(this);
+                dao.insere(aluno);
+                dao.close();
+
+                Toast.makeText(FormularioActivity.this, "Aluno "+ aluno.getNome() +" salvo com sucesso!", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(FormularioActivity.this, ListaAlunosActivity.class);
                 startActivity(intent);
+
                 finish();
                 break;
         }
