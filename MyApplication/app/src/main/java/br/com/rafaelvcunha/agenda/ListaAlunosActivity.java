@@ -3,10 +3,14 @@ package br.com.rafaelvcunha.agenda;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -26,29 +30,58 @@ public class ListaAlunosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lista_alunos);
 
         listaAlunos = (ListView) findViewById(R.id.lista_alunos);
-        //String[] alunos = {"Rafael", "Mônica", "Soraia", "João"};
-        /*
-        AlunoDAO dao = new AlunoDAO(this);
-        List<Aluno> alunos = dao.buscaAlunos();
-        dao.close();
 
-        ListView lista_alunos = (ListView) findViewById(R.id.lista_alunos);
+
+        listaAlunos.setOnItemClickListener( new AdapterView.OnItemClickListener(){
+
+            @Override
+            public void onItemClick(AdapterView<?> lista, View view, int position, long id) {
+                Aluno aluno = (Aluno) listaAlunos.getItemAtPosition(position);
+                Toast.makeText(ListaAlunosActivity.this, "Aluno selecionado: " +aluno.getNome(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ListaAlunosActivity.this, FormularioActivity.class);
+                intent.putExtra("aluno", aluno);
+                //intent.putExtra("alunoId", aluno.getId());
+                startActivity(intent);
+            }
+        });
+
+        //String[] alunos = {"Rafael", "Mônica", "Soraia", "João"};
         //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, alunos);
-        ArrayAdapter<Aluno> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, alunos);
-        lista_alunos.setAdapter(adapter);
-        */
+        //lista_alunos.setAdapter(adapter);
+
         Button btnNovoAluno = (Button) findViewById(R.id.listaAlunos_novoAluno);
         btnNovoAluno.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ListaAlunosActivity.this, FormularioActivity.class);
                 startActivity(intent);
-                finish();
+
             }
         });
 
+        registerForContextMenu(listaAlunos);
+    }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
+        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 
+        MenuItem deletar = menu.add("Deletar");
+        deletar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                Aluno aluno = (Aluno) listaAlunos.getItemAtPosition(info.position);
+                AlunoDAO dao = new AlunoDAO(ListaAlunosActivity.this);
+                dao.deleta(aluno);
+                dao.close();
+                Toast.makeText(ListaAlunosActivity.this, "Deletando o aluno " + aluno.getNome(), Toast.LENGTH_SHORT).show();
+
+                carregarLista();
+                return false;
+            }
+        });
     }
 
     public void carregarLista(){
